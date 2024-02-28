@@ -21,7 +21,7 @@ data.drop_duplicates(inplace=True)  # Menghapus data duplikat
 data = data[['Provinsi', 'Produktivitas_Kopi', 'Luas_Areal_Kopi', 'Produksi_Kopi', 'Tahun']]
 
 # Menangani outlier (misalnya, menggunakan teknik winsorization)
-from scipy.stats.mstats import winsorize
+from scipy.stats import winsorize
 data['Produksi_Kopi'] = winsorize(data['Produksi_Kopi'], limits=[0.05, 0.05])  # Winsorization pada produksi kopi
 
 # Menampilkan setiap hasil pra-pemrosesan data
