@@ -3,14 +3,12 @@ import pandas as pd
 
 
 
-data = pd.read_csv("dataproduksikopi.csv", sep=";")
+data = pd.read_csv("totalproduksikopi.csv", sep=",")
 
 # Memeriksa kelengkapan data
 data.info()
 # 1. Pembersihan Data
-# Konversi kolom "Produksi_Kopi" dan "Luas_Area_Kopi" menjadi tipe data numerik
-data['Produksi_Kopi'] = data['Produksi_Kopi'].str.replace(',', '').astype(float)
-data['Luas_Area_Kopi'] = data['Luas_Area_Kopi'].str.replace(',', '').astype(float)
+
 # Identifikasi dan tangani nilai-nilai yang hilang
 data.dropna(inplace=True)  # Menghapus baris yang memiliki nilai-nilai yang hilang
 
@@ -20,7 +18,7 @@ data.drop_duplicates(inplace=True)  # Menghapus data duplikat
 # 2. Proses Manipulasi
 
 # Menentukan data karakteristik
-data = data[['Provinsi', 'Produktivitas_Kopi', 'Luas_Area_Kopi', 'Produksi_Kopi', 'Tahun']]
+data = data[['Provinsi', 'Produktivitas_Kopi', 'Luas_Areal_Kopi', 'Produksi_Kopi', 'Tahun']]
 
 # Menangani outlier (misalnya, menggunakan teknik winsorization)
 from scipy.stats.mstats import winsorize
@@ -44,13 +42,12 @@ plt.show()
 
 # Menampilkan distribusi nilai dari kolom Luas_Areal_Kopi
 plt.figure(figsize=(8, 6))
-plt.hist(data['Luas_Area_Kopi'], bins=20, color='skyblue', edgecolor='black')
+plt.hist(data['Luas_Areal_Kopi'], bins=20, color='skyblue', edgecolor='black')
 plt.title('Distribusi Luas Area Kopi')
 plt.xlabel('Luas Area Kopi')
 plt.ylabel('Frekuensi')
 plt.grid(True)
 plt.show()
-
 # Check if data is empty
 if data.empty:
     st.error("Data is empty. Please check your database connection or the data itself.")
@@ -72,7 +69,7 @@ if filtered_data.empty:
     st.warning("Data for the selected year is not available.")
 else:
     total_production = filtered_data["Produksi_Kopi"].sum()
-    total_area = filtered_data["Luas_Area_Kopi"].sum()
+    total_area = filtered_data["Luas_Areal_Kopi"].sum()
     productivity = (total_production / total_area) * 100
 
     # Menampilkan metrik
@@ -96,11 +93,11 @@ else:
         col1.write(f"Perubahan Total Produksi ({prev_year} - {selected_year}):")
         col1.write(f"{perubahan_produksi:,.0f} kg")
 
-        perubahan_luas_areal = filtered_data['Luas_Area_Kopi'].sum() - prev_year_data['Luas_Area_Kopi'].sum()
+        perubahan_luas_areal = filtered_data['Luas_Areal_Kopi'].sum() - prev_year_data['Luas_Areal_Kopi'].sum()
         col2.write(f"Perubahan Luas Areal ({prev_year} - {selected_year}):")
         col2.write(f"{perubahan_luas_areal:,.0f} ha")
 
-        perubahan_produktivitas = productivity - (prev_year_data['Produksi_Kopi'].sum() / prev_year_data['Luas_Area_Kopi'].sum()) * 100
+        perubahan_produktivitas = productivity - (prev_year_data['Produksi_Kopi'].sum() / prev_year_data['Luas_Areal_Kopi'].sum()) * 100
         col3.write(f"Perubahan Produktivitas ({prev_year} - {selected_year}):")
         col3.write(f"{perubahan_produktivitas:.2f} %")
 
@@ -135,7 +132,7 @@ else:
         st.plotly_chart(fig3)
 
         # Visualisasi 4: Pengaruh Luas Areal terhadap Produksi Kopi
-        fig4 = px.scatter(filtered_data, x="Luas_Area_Kopi", y="Produksi_Kopi", title="Pengaruh Luas Areal terhadap Produksi Kopi", color="Provinsi", size="Produksi_Kopi", hover_name="Provinsi")
+        fig4 = px.scatter(filtered_data, x="Luas_Areal_Kopi", y="Produksi_Kopi", title="Pengaruh Luas Areal terhadap Produksi Kopi", color="Provinsi", size="Produksi_Kopi", hover_name="Provinsi")
         st.plotly_chart(fig4)
 
         # Visualisasi 5: Analisis Kontribusi Provinsi terhadap Produksi Nasional
