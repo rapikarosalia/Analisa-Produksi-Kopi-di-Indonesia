@@ -1,5 +1,5 @@
 import pandas as pd
-import os
+
 
 # Load data dari file Excel
 path_excel = "data_kopi.xlsx"
