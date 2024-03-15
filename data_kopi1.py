@@ -9,56 +9,6 @@ kopi = pd.read_excel(path_excel)
 kopi = kopi.round(2)
 
 
-# Mengisi nilai yang hilang dengan nilai rata-rata
-kopi.fillna(kopi.select_dtypes(include='number').mean(), inplace=True)
-# Menghapus duplikat (jika ada)
-kopi.drop_duplicates(inplace=True)
-# Fungsi untuk mendeteksi outlier menggunakan IQR
-def detect_outliers(df, column):
-    Q1 = df[column].quantile(0.25)
-    Q3 = df[column].quantile(0.75)
-    IQR = Q3 - Q1
-    lower_bound = Q1 - 1.5 * IQR
-    upper_bound = Q3 + 1.5 * IQR
-    outliers = df[(df[column] < lower_bound) | (df[column] > upper_bound)]
-    return outliers
-
-# Deteksi outlier untuk kolom tertentu, contoh:
-outliers_produksi_kopi = detect_outliers(kopi, 'produksi_kopi')
-
-# Anda bisa menangani outlier dengan menghapusnya atau menggantinya dengan nilai lain
-# Misalnya, mengganti outlier dengan nilai maksimum dalam rentang yang wajar
-kopi.loc[outliers_produksi_kopi.index, 'produksi_kopi'] = kopi['produksi_kopi'].quantile(0.95)  # Ganti dengan nilai kuantil ke-95
-# Menghapus kolom 'Provinsi' sebelum menghitung korelasi
-kopi_numerik = kopi.drop(columns=['Provinsi'])
-
-# Menghitung korelasi antara setiap pasang variabel
-correlation_matrix = kopi_numerik.corr()
-
-# Menampilkan matriks korelasi
-print(correlation_matrix)
-import seaborn as sns
-import matplotlib.pyplot as plt
-correlation_matrix = kopi_numerik.corr()
-plt.figure(figsize=(10, 8))
-sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt=".2f", linewidths=0.5)
-plt.title('Heatmap Korelasi Antara Variabel')
-plt.show()
-
-# Analisis distribusi variabel
-kopi_numerik.hist(figsize=(12, 10))
-plt.show()
-
-# Normalitas data
-from scipy.stats import shapiro
-for column in kopi_numerik.columns:
-    stat, p = shapiro(kopi_numerik[column])
-    print(f'Variabel {column}: Statistik={stat}, p-value={p}')
-    if p > 0.05:
-        print('Distribusi normal')
-    else:
-        print('Tidak distribusi normal')
-
 import streamlit as st
 import pandas as pd
 import seaborn as sns
